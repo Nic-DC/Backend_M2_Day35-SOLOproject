@@ -27,4 +27,4 @@ accommodationSchema.methods.toJSON = function () {
   return accomodation;
 };
 
-export default model("Accomodation", accommodationSchema);
+export default model("Accommodation", accommodationSchema);

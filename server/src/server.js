@@ -7,11 +7,11 @@ import mongoose from "mongoose";
 import usersRouter from "./api/USER/index.js";
 import authRouter from "./api/AUTHENTICATIONrouter/index.js";
 import accommodationRouter from "./api/ACCOMMODATION/index.js";
+import googleAuthRouter from "./api/AUTHENTICATIONrouter/googleAuth.js";
 import { badRequestHandler, notFoundHandler, genericErrorHandler } from "./errorHandlers.js";
-import googleStrategy from "./lib/auth/googleOAUTH.js";
+// import googleStrategy from "./lib/auth/googleOAUTH.js";
 
 const server = express();
-const port = process.env.PORT || 3008;
 
 const { FE_DEV_URL } = process.env;
 
@@ -27,7 +27,7 @@ const corsOpts = {
     }
   },
 };
-passport.use("google", googleStrategy); // Do not forget to inform Passport that we need to use GoogleStrategy!
+// passport.use("google", googleStrategy); // Do not forget to inform Passport that we need to use GoogleStrategy!
 
 // ******************************* MIDDLEWARES ****************************************
 server.use(cors(corsOpts));
@@ -38,18 +38,11 @@ server.use(passport.initialize()); // Do not forget to inform Express that we ne
 
 server.use("/users", usersRouter);
 server.use("/auth", authRouter);
+server.use("/users", googleAuthRouter);
 server.use("/accommodations", accommodationRouter);
 // ***************************** ERROR HANDLERS ***************************************
 server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
 
-mongoose.connect(process.env.MONGO_URL);
-
-mongoose.connection.on("connected", () => {
-  console.log("Successfully connected to Mongo!");
-  server.listen(port, () => {
-    console.table(listEndpoints(server));
-    console.log(`Server is running on port ${port}`);
-  });
-});
+export default server;

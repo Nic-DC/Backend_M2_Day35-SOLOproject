@@ -45,14 +45,4 @@ authRouter.post("/login", async (req, res, next) => {
   }
 });
 
-// Google OAUTH
-authRouter.get("/googleLogin", passport.authenticate("google", { scope: ["profile", "email"] }));
-// The purpose of this endpoint is to redirect users to Google Consent Screen
-
-authRouter.get("/googleRedirect", passport.authenticate("google", { session: false }), async (req, res, next) => {
-  console.log(req.user);
-  res.redirect(`${process.env.FE_DEV_URL}?accessToken=${req.user.accessToken}`);
-});
-// The purpose of this endpoint is to bring users back, receiving a response from Google, then execute the callback function, then send a response to the client
-
 export default authRouter;
