@@ -61,4 +61,18 @@ describe(`M5-Day95-SOLO:`, () => {
     expect(response.body.newUser.email).toEqual("jest2@test.com");
     expect(response.body.newUser.role).toEqual("Guest");
   });
+
+  // Test #3
+  it("should return 400 with an invalid request", async () => {
+    const response = await client
+      .post("/auth/register")
+      .send({
+        email: "invalid_email",
+        password: "1$}{blalblabla",
+        role: "Guest",
+      })
+      .expect(400);
+
+    expect(response.body.accessToken).toBeUndefined();
+  });
 });

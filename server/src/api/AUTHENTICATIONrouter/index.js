@@ -3,13 +3,14 @@ import createHttpError from "http-errors";
 import TravelUsersModel from "../USER/model.js";
 import { createAccessToken } from "../../lib/tools/tools.js";
 import passport from "passport";
+import { checkUserSchema, triggerBadRequest } from "../USER/validator.js";
 
 const { NotFound } = createHttpError;
 
 const authRouter = express.Router();
 
 // REGISTER
-authRouter.post("/register", async (req, res, next) => {
+authRouter.post("/register", checkUserSchema, triggerBadRequest, async (req, res, next) => {
   try {
     const body = req.body;
     body.isRegistered = true;
