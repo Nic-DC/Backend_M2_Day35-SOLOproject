@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 //import passport from "passport";
 
 function Register() {
@@ -37,6 +40,9 @@ function Register() {
       setIsRegistered(true);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
+      const errorMessage = "Registration failed. Please try again later.";
+
+      toast.error(errorMessage);
     }
   };
 

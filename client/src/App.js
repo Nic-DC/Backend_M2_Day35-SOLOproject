@@ -7,6 +7,7 @@ import NavBar from "./components/navigation/NavBar";
 
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
+      <ToastContainer position="top-center" />
     </Router>
   );
 }
