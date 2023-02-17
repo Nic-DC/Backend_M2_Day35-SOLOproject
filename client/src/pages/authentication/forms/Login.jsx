@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +10,7 @@ const Login = () => {
     password: "",
   });
 
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleChange = (event) => {
@@ -34,12 +38,14 @@ const Login = () => {
       setIsLoggedIn(true);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
+      const errorMessage = "Login failed. Please check your email and password.";
+      toast.error(errorMessage);
     }
   };
 
   useEffect(() => {
     if (isLoggedIn) {
-      window.location.href = "/";
+      navigate("/");
     }
   }, [isLoggedIn]);
 

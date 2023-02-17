@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
-import { useEffect } from "react";
+
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import zxcvbn from "zxcvbn";
@@ -12,6 +13,8 @@ function Register() {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   const [isRegistered, setIsRegistered] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
@@ -66,7 +69,7 @@ function Register() {
 
   useEffect(() => {
     if (isRegistered) {
-      window.location.href = "/login";
+      navigate("/login");
     }
   }, [isRegistered]);
 
