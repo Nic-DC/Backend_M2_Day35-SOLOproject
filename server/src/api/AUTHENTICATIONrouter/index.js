@@ -43,7 +43,8 @@ authRouter.post("/login", async (req, res, next) => {
 
       res.status(200).send({ accessToken });
     } else {
-      next(createHttpError(401, "Credentials are not ok!"));
+      // next(createHttpError(401, "Credentials are not ok!"));
+      res.status(401).send({ failure: `Credentials not ok` });
     }
   } catch (error) {
     console.log(error);

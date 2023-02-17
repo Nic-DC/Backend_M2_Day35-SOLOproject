@@ -18,7 +18,7 @@ const registeredUser = {
 };
 
 const invalidUser = {
-  email: "teste",
+  email: "invalidUser@test.com",
   password: "12KLO$*EW",
   role: "Guest",
 };
@@ -104,5 +104,13 @@ describe(`M5-Day95-SOLO:`, () => {
     const payload = jwt.verify(response.body.accessToken, process.env.JWT_SECRET);
     console.log("payload", payload);
     expect(payload).toBeDefined();
+  });
+
+  // Test #5
+  it("with a NOT valid request must return 401", async () => {
+    const response = await client.post("/auth/login").send(invalidUser).expect(401);
+
+    // expect(response.body.accessToken).not.toBeDefined();
+    // expect(response.status).toBe(401);
   });
 });
