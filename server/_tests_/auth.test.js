@@ -4,11 +4,24 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { createAccessToken } from "../src/lib/tools/tools.js";
 import TravelUsersModel from "../src/api/USER/model.js";
 
 dotenv.config();
 
 const client = supertest(server);
+
+const registeredUser = {
+  email: "Halle56@yahoo.com",
+  password: "123",
+  role: "Guest",
+};
+
+const invalidUser = {
+  email: "teste",
+  password: "12KLO$*EW",
+  role: "Guest",
+};
 
 server.get("/users", (req, res) => {
   res.status(200).json({ message: "Users endpoint is working!" });
@@ -29,10 +42,10 @@ beforeAll(async () => {
   await user.save();
 });
 
-afterAll(async () => {
-  await TravelUsersModel.deleteMany();
-  await mongoose.connection.close();
-});
+// afterAll(async () => {
+//   await TravelUsersModel.deleteMany();
+//   await mongoose.connection.close();
+// });
 
 describe(`M5-Day95-SOLO:`, () => {
   // Testing the DB connection
@@ -45,20 +58,24 @@ describe(`M5-Day95-SOLO:`, () => {
   it("should return 201 and a valid JWT token with a valid request", async () => {
     const response = await client
       .post("/auth/register")
-      .send({
-        email: "jest2@test.com",
-        password: "1$}{blalblabla",
-        role: "Guest",
-      })
+      //   .send({
+      //     email: "jest2@test.com",
+      //     password: "1$}{blalblabla",
+      //     role: "Guest",
+      //   })
+      .send(registeredUser)
       .expect(201);
-    console.log("response.body", response.body);
+    // console.log("response.body", response.body);
 
     expect(response.body.accessToken).toBeDefined();
 
     const payload = jwt.verify(response.body.accessToken, process.env.JWT_SECRET);
     console.log("payload", payload);
 
-    expect(response.body.newUser.email).toEqual("jest2@test.com");
+    // console.log("accessToken in test 2:", response.body.accessToken);
+    // accessToken = response.body.accessToken;
+
+    expect(response.body.newUser.email).toEqual("Halle56@yahoo.com");
     expect(response.body.newUser.role).toEqual("Guest");
   });
 
@@ -74,5 +91,18 @@ describe(`M5-Day95-SOLO:`, () => {
       .expect(400);
 
     expect(response.body.accessToken).toBeUndefined();
+  });
+
+  // Test #4
+  it("with a valid request must return 200 and must return a valid JWT token", async () => {
+    const response = await client.post("/auth/login").send(registeredUser).expect(200);
+
+    console.log("response in TEST:", response.body.accessToken);
+
+    expect(response.body.accessToken).toBeDefined();
+
+    const payload = jwt.verify(response.body.accessToken, process.env.JWT_SECRET);
+    console.log("payload", payload);
+    expect(payload).toBeDefined();
   });
 });
