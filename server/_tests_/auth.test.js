@@ -42,10 +42,10 @@ beforeAll(async () => {
   await user.save();
 });
 
-// afterAll(async () => {
-//   await TravelUsersModel.deleteMany();
-//   await mongoose.connection.close();
-// });
+afterAll(async () => {
+  await TravelUsersModel.deleteMany();
+  await mongoose.connection.close();
+});
 
 describe(`M5-Day95-SOLO:`, () => {
   // Testing the DB connection
@@ -56,24 +56,12 @@ describe(`M5-Day95-SOLO:`, () => {
 
   // Test #2
   it("should return 201 and a valid JWT token with a valid request", async () => {
-    const response = await client
-      .post("/auth/register")
-      //   .send({
-      //     email: "jest2@test.com",
-      //     password: "1$}{blalblabla",
-      //     role: "Guest",
-      //   })
-      .send(registeredUser)
-      .expect(201);
-    // console.log("response.body", response.body);
+    const response = await client.post("/auth/register").send(registeredUser).expect(201);
 
     expect(response.body.accessToken).toBeDefined();
 
     const payload = jwt.verify(response.body.accessToken, process.env.JWT_SECRET);
     console.log("payload", payload);
-
-    // console.log("accessToken in test 2:", response.body.accessToken);
-    // accessToken = response.body.accessToken;
 
     expect(response.body.newUser.email).toEqual("Halle56@yahoo.com");
     expect(response.body.newUser.role).toEqual("Guest");
@@ -109,8 +97,5 @@ describe(`M5-Day95-SOLO:`, () => {
   // Test #5
   it("with a NOT valid request must return 401", async () => {
     const response = await client.post("/auth/login").send(invalidUser).expect(401);
-
-    // expect(response.body.accessToken).not.toBeDefined();
-    // expect(response.status).toBe(401);
   });
 });
