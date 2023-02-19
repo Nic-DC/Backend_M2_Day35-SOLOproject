@@ -89,12 +89,14 @@ accommodationRouter.route("/").get(JWTAuthMiddleware, hallPassMiddleware, async 
 accommodationRouter.route("/:id").get(JWTAuthMiddleware, hallPassMiddleware, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const accommodation = await AccommodationsModel.findById(id).populate("host");
+    // const accommodation = await AccommodationsModel.findById(id).populate("host");
+    const accommodation = await AccommodationsModel.findById(id);
 
     if (accommodation) {
       res.send({ accommodation });
     } else {
-      next(NotFound(`Accommodation with id: ${id} not in our db`));
+      // next(NotFound(`Accommodation with id: ${id} not in our db`));
+      res.status(404).send({ error: `Accommodation with id: ${id} not in our db` });
     }
   } catch (error) {
     console.log("GET / - ERROR: ", error);
