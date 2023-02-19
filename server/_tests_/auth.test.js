@@ -23,10 +23,6 @@ const invalidUser = {
   role: "Guest",
 };
 
-server.get("/users", (req, res) => {
-  res.status(200).json({ message: "Users endpoint is working!" });
-});
-
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL_TEST);
 
@@ -47,11 +43,10 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe(`M5-Day95-SOLO:`, () => {
-  // Testing the DB connection
-  it("should return 200 OK", async () => {
-    const response = await client.get("/users");
-    expect(response.status).toBe(200);
+describe(`Authentication tests: `, () => {
+  // Testing the env variables
+  it("Should test that the env vars are set correctly", () => {
+    expect(process.env.MONGO_URL_TEST).toBeDefined();
   });
 
   // Test #2
@@ -61,7 +56,6 @@ describe(`M5-Day95-SOLO:`, () => {
     expect(response.body.accessToken).toBeDefined();
 
     const payload = jwt.verify(response.body.accessToken, process.env.JWT_SECRET);
-    console.log("payload", payload);
 
     expect(response.body.newUser.email).toEqual("Halle56@yahoo.com");
     expect(response.body.newUser.role).toEqual("Guest");
@@ -85,12 +79,8 @@ describe(`M5-Day95-SOLO:`, () => {
   it("with a valid request must return 200 and must return a valid JWT token", async () => {
     const response = await client.post("/auth/login").send(registeredUser).expect(200);
 
-    console.log("response in TEST:", response.body.accessToken);
-
-    expect(response.body.accessToken).toBeDefined();
-
     const payload = jwt.verify(response.body.accessToken, process.env.JWT_SECRET);
-    console.log("payload", payload);
+
     expect(payload).toBeDefined();
   });
 

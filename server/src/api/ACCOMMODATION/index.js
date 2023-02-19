@@ -2,6 +2,7 @@ import express from "express";
 import createHttpError from "http-errors";
 import TravelUsersModel from "../USER/model.js";
 import AccommodationsModel from "./model.js";
+import BookingsModel from "./bookingModel.js";
 import { JWTAuthMiddleware } from "../../lib/auth/JWTAuth.js";
 import { hostOnlyMiddleware } from "../../lib/auth/hostOnly.js";
 import { hallPassMiddleware } from "../../lib/auth/hallPassAuth.js";
@@ -34,6 +35,7 @@ accommodationRouter.route("/").post(JWTAuthMiddleware, hostOnlyMiddleware, async
     // if (!travelUser) {
     //   return res.status(400).send({ error: "Host not found" });
     // }
+    // {
 
     const accommodation = new AccommodationsModel({
       name,
@@ -45,9 +47,40 @@ accommodationRouter.route("/").post(JWTAuthMiddleware, hostOnlyMiddleware, async
 
     const newAccommodation = await accommodation.save();
 
+    const booking = new BookingsModel({
+      user: name,
+      host: req.user._id,
+      accommodation: newAccommodation._id,
+    });
+    await booking.save();
+
+    // console.log("booking: ", booking);
     res.send({ newAccommodation });
   } catch (error) {
     console.log(`POST accommodation - ERROR: ${error}`);
+    next(error);
+  }
+});
+// GET - all accommodations that a HOST made or all the accommodations a travel has
+accommodationRouter.route("/").get(JWTAuthMiddleware, hallPassMiddleware, async (req, res, next) => {
+  try {
+    const { _id, role } = req.user;
+    let accommodations = [];
+
+    if (role === "Host") {
+      accommodations = await AccommodationsModel.find({ host: _id });
+    } else if (role === "Guest") {
+      accommodations = await AccommodationsModel.find({ role: "Guest" });
+    }
+    // const accommodations = await AccommodationsModel.find({ host: req.user._id });
+    // console.log("accommodations", accommodations);
+    // if (accommodations.length === 0) {
+    //   res.send({ error: "There are no accommodations made" });
+    // }
+
+    res.send(accommodations);
+  } catch (error) {
+    console.log("/ - GET - ERROR: ", error);
     next(error);
   }
 });
@@ -78,9 +111,8 @@ accommodationRouter.put("/:id", JWTAuthMiddleware, hallPassMiddleware, async (re
     }
 
     const currentUser = req.user;
-    console.log("currentUser: ", currentUser);
+
     const host = await TravelUsersModel.findById(accommodation.host);
-    console.log("host: ", host);
 
     if (currentUser._id === host._id.toString() || currentUser.role === "Guest") {
       Object.assign(accommodation, req.body);

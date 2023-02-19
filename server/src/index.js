@@ -4,7 +4,7 @@ import server from "./server.js";
 
 const port = process.env.PORT || 3008;
 
-mongoose.connect(process.env.MONGO_URL_TEST);
+mongoose.connect(process.env.MONGO_URL);
 
 mongoose.connection.on("connected", () => {
   console.log("Successfully connected to Mongo!");
